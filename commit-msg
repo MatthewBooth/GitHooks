@@ -3,29 +3,34 @@
 # Automatically adds branch name and time spent to every commit message.
 #
 
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  SOURCE_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$SOURCE_DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+SOURCE_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+runGitCommitMsg() {
+	java -cp "$SOURCE_DIR" GitCommitMsg "$BRANCH" "$MESSAGE"
+}
+
 # Get the branch name
-NAME=$(git branch | grep '*' | sed 's/* //' | sed -e 's|[A-Za-z]*/||g' | sed -e 's/\(.*-[0-9]*\)\(-\)\(.*\)/\1/g')
+BRANCH=$(git branch | grep '*' | sed 's/* //')
 
 # Get the whole commit message
-TEXT=$(cat "$1" | sed '/^#.*/d')
+MESSAGE=$(cat "$1" | sed '/^#.*/d')
 
-# Get the time spent on the ticket/commit
-# This is in the following format work 1d, work 1h, work 1m
-
-TIME=$(echo "$TEXT" | sed 's/\(.*\)\(work\)\(.*\)/\2\3/g')
-
-# Reform the text variable to get only the message, without the time spent
-TEXT=$(echo "$TEXT" | sed 's/\(.*\)\(work\)\(.*\)/\1/g')
-
-# Check the commit message isn't empty
-if [ ! -n "$TEXT" ]; then
-	echo >&2 "Aborting commit due to empty commit message."
-    exit 1
+if [ ! which java >/dev/null 2>&1 ]; then
+  echo "Java is not installed. Please install Java"
+  exit 1 
 fi
 
-# Check we're on a branch that is named correctly after a YouTrack ticket
-if [ -n "$NAME" ]; then
-    echo "$TEXT \n\n" > "$1"
-	echo "YouTrack: ""#""$NAME" "$TIME" >> "$1"
-	exit 0
+if [ -e GitCommitMsg.class ];then
+	runGitCommitMsg
+else
+	javac "$SOURCE_DIR"/GitCommitMsg.java
+	runGitCommitMsg 
 fi
+
+exit 0
