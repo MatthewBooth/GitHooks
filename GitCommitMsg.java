@@ -1,3 +1,4 @@
+import java.lang.String;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,13 +9,20 @@ public class GitCommitMsg {
     private String mTimeSpent;
 
     public GitCommitMsg() {
-
+        mBranch == "";
+        mMessage = "";
+        mTimeSpent = "";
     }
 
     public String getBranch() {
         return mBranch;
     }
 
+    /**
+     * Sets the branch name and number, if in a YouTrack format
+     * e.g "connection-51"
+     * @param branch  The branch in it's raw form
+     */
     public void setBranch(String branch) {
         if (branch.contains("/")) {
             String[] split = branch.split("/");
@@ -40,6 +48,11 @@ public class GitCommitMsg {
         return mMessage;
     }
 
+    /**
+     * Sets the message string without the time spent data
+     * For use in the actual git commit message
+     * @param message  The raw commit message
+     */
     public void setMessage(String message) {
 
         if (message.toLowerCase().contains("work")) {
@@ -58,6 +71,10 @@ public class GitCommitMsg {
         return mTimeSpent;
     }
 
+    /**
+     * Sets the time spent as isolated from the commit message
+     * @param message  The raw commit message
+     */
     private void setTimeSpent(String message) {
 
         Pattern pattern = Pattern.compile("work{1}\\s{1}[1-9]{1,3}[d|h|m]{1}");
@@ -70,6 +87,10 @@ public class GitCommitMsg {
         }
     }
 
+    /**
+     * Builds the output commit message
+     * @return  A structured commit message
+     */
     private String getOutput() {
 
         StringBuilder output = new StringBuilder();
@@ -96,12 +117,18 @@ public class GitCommitMsg {
     public static void main(String[] args) {
         GitCommitMsg gitCommitMsg = new GitCommitMsg();
 
-        gitCommitMsg.setBranch(args[0]);
+        String branch = args[0];
 
-        gitCommitMsg.setTimeSpent(args[1]);
+        String message = args[1];
 
-        gitCommitMsg.setMessage(args[1]);
+        gitCommitMsg.setBranch(branch);
 
-        System.out.println(gitCommitMsg.getOutput()); // Display the string.
+        gitCommitMsg.setTimeSpent(message);
+
+        gitCommitMsg.setMessage(message);
+
+        String output = gitCommitMsg.getOutput();
+
+        System.out.println(output); // Display the string.
     }
 }
