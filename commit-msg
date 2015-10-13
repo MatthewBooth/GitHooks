@@ -18,11 +18,14 @@ TIME=$(echo "$TEXT" | sed 's/\(.*\)\(work\)\(.*\)/\2\3/g')
 TEXT=$(echo "$TEXT" | sed 's/\(.*\)\(work\)\(.*\)/\1/g')
 
 # Check the commit message isn't empty
-if [ -n "$TEXT" ]; then
+if [ ! -n "$TEXT" ]; then
+	echo >&2 "Aborting commit due to empty commit message."
+    exit 1
+fi
+
+# Check we're on a branch that is named correctly after a YouTrack ticket
+if [ -n "$NAME" ]; then
     echo "$TEXT \n\n" > "$1"
 	echo "YouTrack: ""#""$NAME" "$TIME" >> "$1"
 	exit 0
-else
-    echo >&2 "Aborting commit due to empty commit message."
-    exit 1
 fi
