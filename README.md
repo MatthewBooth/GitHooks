@@ -1,4 +1,4 @@
-# Bolser Githooks
+# Bolser GitHooks
 
 ### Installation
 
