@@ -8,6 +8,10 @@ public class GitCommitMsg {
     private String mMessage;
     private String mTimeSpent;
 
+    private static String WORK_PATTERN_STRING = "work{1}\\s{1}[0-9]{1,3}[d|h|m]{1}";
+    private static String BRANCH_PATTERN_STRING = "[a-zA-Z]*-[0-9]{1,4}";
+    private static String BRANCH_PREFIX_PATTERN_STRING = "[a-zA-Z]*/";
+
     public GitCommitMsg() {
     }
 
@@ -39,7 +43,7 @@ public class GitCommitMsg {
         if (branch.contains("/")) {
 
             // Split on this slash
-            String[] split = branch.split("/");
+            String[] split = branch.split(BRANCH_PREFIX_PATTERN_STRING);
 
             // Make sure the length is greater than one. That we actually have something after the slash
             if (split.length > 1) {
@@ -48,7 +52,7 @@ public class GitCommitMsg {
                 // We're looking for an number of value word characters
                 // Split by a dash
                 // Followed by any digits in 1 to 4 characters in length
-                Pattern pattern = Pattern.compile("[a-zA-Z]*-[0-9]{1,4}");
+                Pattern pattern = Pattern.compile(BRANCH_PATTERN_STRING);
 
                 // Check the pattern against the split string
                 // We're using the second split, everything after the slash
@@ -82,14 +86,15 @@ public class GitCommitMsg {
         // Initialised the mMessage variable
         mMessage = "";
 
-        // The keyword used by YouTrack to denote time spent
-        String timeSpentKeyword = "work";
+        // Check to see if we have successfully set the time spent variable
+        // If we have then we can split on it
+        String timeSpent = getTimeSpent();
+        if (!timeSpent.isEmpty()) {
 
-        // Check to see if the message contains this keyword
-        if (message.toLowerCase().contains(timeSpentKeyword)) {
-
-            // Split the string on this keyword
-            String[] split = message.split(timeSpentKeyword);
+            // Split the string on the time spent keyword
+            // No need to use the whole regex for this, as we already know we can just use "work"
+            // Since the time split variable is set
+            String[] split = message.split("work");
 
             // If the split is larger than 1, then we have something to use
             if (split.length > 1) {
@@ -129,7 +134,7 @@ public class GitCommitMsg {
         // We're looking for the word "work once
         // Followed by a whitespace character once
         // Finished by any digit between 0-9, either 1 to 3 times
-        Pattern pattern = Pattern.compile("work{1}\\s{1}[0-9]{1,3}[d|h|m]{1}");
+        Pattern pattern = Pattern.compile(WORK_PATTERN_STRING);
 
         // Match the pattern against the message
         Matcher matcher = pattern.matcher(message);
