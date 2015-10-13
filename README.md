@@ -22,6 +22,7 @@ This will then create a git commit looking like this
 ```bash
 This the work we have done
 
-YouTrack: #connection-51 work 1d```
+YouTrack: #connection-51 work 1d
+```
 
 and update YouTrack accordingly!
