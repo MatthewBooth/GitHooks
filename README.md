@@ -1,5 +1,23 @@
 # Bolser Githooks
 
+### Installation
+
+To install this run the following command from this directory:-
+
+```bash
+sh install-custom-githooks.sh
+```
+
+Now all future cloned repositories will use these custom hooks
+
+What about current repositories? Simples! Navigate to that repository and run this command:-
+
+```bash
+git init
+```
+
+### How it works
+
 This works in the following method:-
 
 The git branch should match the YouTrack ticket number. For example on YouTrack we use "connection-51". Therefore the git branch should contain the same. Usually something like "feature/connection-51-description-of-the-feature-or-bug".
