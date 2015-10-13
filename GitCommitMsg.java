@@ -11,8 +11,13 @@ public class GitCommitMsg {
     public GitCommitMsg() {
     }
 
+    /**
+     * Get the branch, if set
+     *
+     * @return  The branch
+     */
     public String getBranch() {
-        return mBranch;
+        return mBranch != null ? mBranch : "";
     }
 
     /**
@@ -42,7 +47,7 @@ public class GitCommitMsg {
     }
 
     private String getMessage() {
-        return mMessage;
+        return mMessage != null ? mMessage : "";
     }
 
     /**
@@ -72,7 +77,7 @@ public class GitCommitMsg {
     }
 
     private String getTimeSpent() {
-        return mTimeSpent;
+        return mTimeSpent != null ? mTimeSpent : "";
     }
 
     /**
