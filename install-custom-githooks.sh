@@ -11,4 +11,4 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 SOURCE_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-git config --global init.templatedir "$SOURCE_DIR"
+git config --global init.templatedir "$SOURCE_DIR"/templates
