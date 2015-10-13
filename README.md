@@ -19,7 +19,7 @@ git commit -m "This is the work we did work 1d"
 
 This will then create a git commit looking like this
 
-```bash
+```
 This the work we have done
 
 YouTrack: #connection-51 work 1d
