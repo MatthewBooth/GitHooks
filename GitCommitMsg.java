@@ -14,7 +14,7 @@ public class GitCommitMsg {
     /**
      * Get the branch, if set
      *
-     * @return  The branch
+     * @return The branch
      */
     public String getBranch() {
         return mBranch != null ? mBranch : "";
@@ -23,22 +23,39 @@ public class GitCommitMsg {
     /**
      * Sets the branch name and number, if in a YouTrack format
      * e.g "connection-51"
+     * <p>
+     * Expected a format such as "feature/connection-51-this-is-our-branch-description"
+     * </p>
      *
      * @param branch The branch in it's raw form
      */
     public void setBranch(String branch) {
 
+        // Initialise the mBranch variable to an empty string
         mBranch = "";
 
+        // Check if the branch contains a slash character
+        // Having this is a sure sign we are using a properly formatted branch
         if (branch.contains("/")) {
 
+            // Split on this slash
             String[] split = branch.split("/");
 
+            // Make sure the length is greater than one. That we actually have something after the slash
             if (split.length > 1) {
 
+                // Pattern matching.
+                // We're looking for an number of value word characters
+                // Split by a dash
+                // Followed by any digits in 1 to 4 characters in length
                 Pattern pattern = Pattern.compile("[a-zA-Z]*-[0-9]{1,4}");
+
+                // Check the pattern against the split string
+                // We're using the second split, everything after the slash
                 Matcher matcher = pattern.matcher(split[1]);
 
+                // If a match is found, we want the branch name to be the first group
+                // A group is any number of identical matches... We probably only want one
                 if (matcher.find()) {
                     mBranch = matcher.group(0);
                 }
@@ -46,7 +63,12 @@ public class GitCommitMsg {
         }
     }
 
-    private String getMessage() {
+    /**
+     * Get the message, if set
+     *
+     * @return The commit message
+     */
+    public String getMessage() {
         return mMessage != null ? mMessage : "";
     }
 
@@ -57,26 +79,39 @@ public class GitCommitMsg {
      * @param message The raw commit message
      */
     public void setMessage(String message) {
-
+        // Initialised the mMessage variable
         mMessage = "";
 
+        // The keyword used by YouTrack to denote time spent
         String timeSpentKeyword = "work";
 
+        // Check to see if the message contains this keyword
         if (message.toLowerCase().contains(timeSpentKeyword)) {
 
+            // Split the string on this keyword
             String[] split = message.split(timeSpentKeyword);
 
+            // If the split is larger than 1, then we have something to use
             if (split.length > 1) {
 
+                // Use the first part of the split, the characters before the keyword
+                // This should be the actual commit message before the time spent data
                 mMessage = split[0];
             }
         } else {
 
+            // If we don't have the work keyword, then we haven't added the time spent data
+            // In which case, just give us the raw message as-is
             mMessage = message;
         }
     }
 
-    private String getTimeSpent() {
+    /**
+     * Get the time spent, if set
+     *
+     * @return The timespent
+     */
+    public String getTimeSpent() {
         return mTimeSpent != null ? mTimeSpent : "";
     }
 
@@ -85,13 +120,21 @@ public class GitCommitMsg {
      *
      * @param message The raw commit message
      */
-    private void setTimeSpent(String message) {
+    public void setTimeSpent(String message) {
 
+        // Initialise the mTimespent variable
         mTimeSpent = "";
 
-        Pattern pattern = Pattern.compile("work{1}\\s{1}[1-9]{1,3}[d|h|m]{1}");
+        // Pattern matching for the time spent
+        // We're looking for the word "work once
+        // Followed by a whitespace character once
+        // Finished by any digit between 0-9, either 1 to 3 times
+        Pattern pattern = Pattern.compile("work{1}\\s{1}[0-9]{1,3}[d|h|m]{1}");
+
+        // Match the pattern against the message
         Matcher matcher = pattern.matcher(message);
 
+        // If we find the pattern then set the first group to be the time spent
         if (matcher.find()) {
 
             mTimeSpent = matcher.group();
@@ -103,16 +146,20 @@ public class GitCommitMsg {
      *
      * @return A structured commit message
      */
-    private String getOutput() {
+    public String getOutput() {
 
+        // Create a new StringBuilder object
         StringBuilder output = new StringBuilder();
 
+        // If either the branch or the time spent variables are empty
+        // Then we either didn't use a proper YouTrack ticket for the branch name
+        // Or we didn't add the time spent, so just return the message
         if (getBranch().isEmpty() || getTimeSpent().isEmpty()) {
 
             return getMessage();
 
         } else {
-
+            // Build out commit message
             output.append(getMessage());
             output.append("\n\n");
             output.append("YouTrack: #");
@@ -120,6 +167,7 @@ public class GitCommitMsg {
             output.append(" ");
             output.append(getTimeSpent());
 
+            // Return it
             return output.toString();
         }
     }
@@ -131,20 +179,29 @@ public class GitCommitMsg {
      *             args[1] should be the git commit-msg
      */
     public static void main(String[] args) {
+
+        // Create an instance of this class
         GitCommitMsg gitCommitMsg = new GitCommitMsg();
 
+        // First argument is the branch
         String branch = args[0];
 
+        // First argument is the message
         String message = args[1];
 
+        // Set the branch variable
         gitCommitMsg.setBranch(branch);
 
+        // Set the time spent variable
         gitCommitMsg.setTimeSpent(message);
 
+        // Set the message variable
         gitCommitMsg.setMessage(message);
 
+        // Build the output string
         String output = gitCommitMsg.getOutput();
 
+        // Return it
         System.out.println(output);
     }
 }
