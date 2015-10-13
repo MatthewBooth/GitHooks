@@ -9,9 +9,6 @@ public class GitCommitMsg {
     private String mTimeSpent;
 
     public GitCommitMsg() {
-        mBranch == "";
-        mMessage = "";
-        mTimeSpent = "";
     }
 
     public String getBranch() {
@@ -21,26 +18,26 @@ public class GitCommitMsg {
     /**
      * Sets the branch name and number, if in a YouTrack format
      * e.g "connection-51"
-     * @param branch  The branch in it's raw form
+     *
+     * @param branch The branch in it's raw form
      */
     public void setBranch(String branch) {
+
+        mBranch = "";
+
         if (branch.contains("/")) {
+
             String[] split = branch.split("/");
 
             if (split.length > 1) {
+
                 Pattern pattern = Pattern.compile("[a-zA-Z]*-[0-9]{1,4}");
                 Matcher matcher = pattern.matcher(split[1]);
 
                 if (matcher.find()) {
                     mBranch = matcher.group(0);
-                } else {
-                    mBranch = "";
                 }
-            } else {
-                mBranch = "";
             }
-        } else {
-            mBranch = "";
         }
     }
 
@@ -51,20 +48,27 @@ public class GitCommitMsg {
     /**
      * Sets the message string without the time spent data
      * For use in the actual git commit message
-     * @param message  The raw commit message
+     *
+     * @param message The raw commit message
      */
     public void setMessage(String message) {
 
-        if (message.toLowerCase().contains("work")) {
-            String[] split = message.split("work");
+        mMessage = "";
+
+        String timeSpentKeyword = "work";
+
+        if (message.toLowerCase().contains(timeSpentKeyword)) {
+
+            String[] split = message.split(timeSpentKeyword);
+
             if (split.length > 1) {
+
                 mMessage = split[0];
-            } else {
-                mMessage = "";
             }
         } else {
+
             mMessage = message;
-        }        
+        }
     }
 
     private String getTimeSpent() {
@@ -73,31 +77,37 @@ public class GitCommitMsg {
 
     /**
      * Sets the time spent as isolated from the commit message
-     * @param message  The raw commit message
+     *
+     * @param message The raw commit message
      */
     private void setTimeSpent(String message) {
+
+        mTimeSpent = "";
 
         Pattern pattern = Pattern.compile("work{1}\\s{1}[1-9]{1,3}[d|h|m]{1}");
         Matcher matcher = pattern.matcher(message);
 
         if (matcher.find()) {
+
             mTimeSpent = matcher.group();
-        } else {
-            mTimeSpent = "";
         }
     }
 
     /**
      * Builds the output commit message
-     * @return  A structured commit message
+     *
+     * @return A structured commit message
      */
     private String getOutput() {
 
         StringBuilder output = new StringBuilder();
 
         if (getBranch().isEmpty() || getTimeSpent().isEmpty()) {
+
             return getMessage();
+
         } else {
+
             output.append(getMessage());
             output.append("\n\n");
             output.append("YouTrack: #");
@@ -111,8 +121,9 @@ public class GitCommitMsg {
 
     /**
      * Runs this program
+     *
      * @param args args[0] should be the branch via "git branch"
-     *             args[1] should be the git commit-msg variable $1
+     *             args[1] should be the git commit-msg
      */
     public static void main(String[] args) {
         GitCommitMsg gitCommitMsg = new GitCommitMsg();
@@ -129,6 +140,6 @@ public class GitCommitMsg {
 
         String output = gitCommitMsg.getOutput();
 
-        System.out.println(output); // Display the string.
+        System.out.println(output);
     }
 }
