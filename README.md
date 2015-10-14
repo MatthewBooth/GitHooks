@@ -25,7 +25,7 @@ git init
 
 This works in the following method:-
 
-The git branch should match the YouTrack ticket number. For example on YouTrack we use "connection-51". Therefore the git branch should contain the same. Usually something like "feature/connection-51-description-of-the-feature-or-bug".
+The git branch name should match the YouTrack ticket number. For example on YouTrack we use "connection-51". Therefore the git branch should contain the same. Usually something like "feature/connection-51-description-of-the-feature-or-bug".
 
 This script will extract that and add it to the end of your commit message.
 
@@ -33,6 +33,7 @@ You can and should also add the time spend to the commit message in the followin
 
 * work 1d
 * work 3h
+* work 6h
 
 Add this at the end of the commit message. It should look like this
 
