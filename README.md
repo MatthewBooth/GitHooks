@@ -16,6 +16,11 @@ What about current repositories? Simples! Navigate to that repository and run th
 git init
 ```
 
+### Requirements
+
+* Git
+* Java 1.7 or greater
+
 ### How it works
 
 This works in the following method:-
