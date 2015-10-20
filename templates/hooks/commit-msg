@@ -3,6 +3,7 @@
 # Automatically adds branch name and time spent to every commit message.
 #
 
+# Finds the source of this file where ever it is located on the system. Even through symlinks
 SOURCE="${BASH_SOURCE[0]}"
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
   SOURCE_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
@@ -11,26 +12,39 @@ while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symli
 done
 SOURCE_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
-runGitCommitMsg() {
-	java -cp "$SOURCE_DIR" GitCommitMsg "$BRANCH" "$MESSAGE"
-}
-
 # Get the branch name
 BRANCH=$(git branch | grep '*' | sed 's/* //')
 
 # Get the whole commit message
 MESSAGE=$(cat "$1" | sed '/^#.*/d')
 
-if [ ! which java >/dev/null 2>&1 ]; then
-  echo "Java is not installed. Please install Java"
-  exit 1 
-fi
+runGitCommitMsg() {
+	java -cp "$SOURCE_DIR" GitCommitMsg "$BRANCH" "$MESSAGE"
+}
 
-if [ -e "$SOURCE_DIR"/GitCommitMsg.class ];then
-	runGitCommitMsg > "$1"
-else
-	javac "$SOURCE_DIR"/GitCommitMsg.java
-	runGitCommitMsg > "$1"
-fi
+compileGitCommitMsg() {
+  javac "$SOURCE_DIR"/GitCommitMsg.java
+}
 
-exit 0
+main() {
+  if [ ! which java >/dev/null 2>&1 ]; then
+    echo "Java Runtime is not installed. Please install JRE"
+    exit 1
+  fi
+
+  if [ ! which javac >/dev/null 2>&1 ]; then
+    echo "Java Development Kit is not installed. Please install JDK"
+    exit 1
+  fi
+
+  if [ -e "$SOURCE_DIR"/GitCommitMsg.class ];then
+      runGitCommitMsg > "$1"
+      exit 0
+  else
+      compileGitCommitMsg
+      runGitCommitMsg > "$1"
+      exit 0
+  fi
+}
+
+main

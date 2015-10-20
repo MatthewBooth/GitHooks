@@ -16,6 +16,22 @@ What about current repositories? Simples! Navigate to that repository and run th
 git init
 ```
 
+### Updating
+
+If there is an update to this repository you should navigate to where ever you cloned it to (perhaps ~/Sites/Githooks?) and run
+
+```bash
+git pull
+```
+
+Then to each of the directories that you use these hooks in, run this command
+
+```bash
+bash $(git config --path --get init.templatedir)/../update-hooks.sh
+```
+
+Updates should be few and far between, but it's worth knowing how to do this!
+
 ### Requirements
 
 * Git
