@@ -26,7 +26,7 @@ if [ ! which java >/dev/null 2>&1 ]; then
   exit 1 
 fi
 
-if [ -e GitCommitMsg.class ];then
+if [ -e "$SOURCE_DIR"/GitCommitMsg.class ];then
 	runGitCommitMsg > "$1"
 else
 	javac "$SOURCE_DIR"/GitCommitMsg.java
