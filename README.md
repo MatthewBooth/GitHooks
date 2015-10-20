@@ -35,8 +35,8 @@ Updates should be few and far between, but it's worth knowing how to do this!
 ### Requirements
 
 * Git
-* Java JRE 1.7 or greater
-* Java JDK 1.7 or greater
+* [Java JRE 1.7 or greater](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
+* [Java JDK 1.7 or greater](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 * Rsync
 
 ### How it works
