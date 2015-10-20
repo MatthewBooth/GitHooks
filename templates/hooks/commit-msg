@@ -26,7 +26,6 @@ compileGitCommitMsg() {
   javac "$SOURCE_DIR"/GitCommitMsg.java
 }
 
-main() {
   if [ ! which java >/dev/null 2>&1 ]; then
     echo "Java Runtime is not installed. Please install JRE"
     exit 1
@@ -45,6 +44,5 @@ main() {
       runGitCommitMsg > "$1"
       exit 0
   fi
-}
 
-main
+exit 255 # Exiting abnormally. Shouldn't be here as we exit in the above statements
