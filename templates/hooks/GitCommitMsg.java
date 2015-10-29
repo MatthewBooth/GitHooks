@@ -9,6 +9,13 @@ public class GitCommitMsg {
     private String mTimeSpent;
 
     private String WORK_PATTERN_STRING = "work{1}\\s{1}([0-9]{1,3}d)?([0-9]{1,3}h)?([0-9]{1,3}m)?";
+
+    private String WORK_PATTERN_INVALID_STRING = "work{1}\\s{1}" +
+            "((([0-9]{1,3}h){1}([0-9]{1,3}d){1}){1}|" +
+            "(([0-9]{1,3}m){1}([0-9]{1,3}d){1}){1}|" +
+            "(([0-9]{1,3}m){1}([0-9]{1,3}h){1}){1}|" +
+            "(([0-9]{1,3}m){1}([0-9]{1,3}d){1}){1})";
+
     private String BRANCH_PATTERN_STRING = "[a-zA-Z]*-[0-9]{1,4}";
     private String BRANCH_PREFIX_PATTERN_STRING = "[a-zA-Z]*/";
 
@@ -134,15 +141,26 @@ public class GitCommitMsg {
         // We're looking for the word "work once
         // Followed by a whitespace character once
         // Finished by any digit between 0-9, either 1 to 3 times
-        Pattern pattern = Pattern.compile(WORK_PATTERN_STRING);
+        Pattern patternValid = Pattern.compile(WORK_PATTERN_STRING);
 
         // Match the pattern against the message
-        Matcher matcher = pattern.matcher(message);
+        Matcher matcherValid = patternValid.matcher(message);
 
-        // If we find the pattern then set the first group to be the time spent
-        if (matcher.find()) {
+        // Invalid pattern matching
+        Pattern patternInvalid = Pattern.compile(WORK_PATTERN_INVALID_STRING);
 
-            mTimeSpent = matcher.group();
+        // Matcher for the invalid pattern
+        Matcher matcherInvalid = patternInvalid.matcher(message);
+
+        // Checks for an invalid pattern match. If we find one, then refuse the pattern
+        // and return without setting the time
+        if (!matcherInvalid.find()) {
+
+            // If we find the pattern then set the first group to be the time spent
+            if (matcherValid.find()) {
+
+                mTimeSpent = matcherValid.group();
+            }
         }
     }
 
