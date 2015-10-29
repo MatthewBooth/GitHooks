@@ -8,7 +8,7 @@ public class GitCommitMsg {
     private String mMessage;
     private String mTimeSpent;
 
-    private String WORK_PATTERN_STRING = "work{1}\\s{1}(([0-9]{1,3}d)?([0-9]{1,3}h)?([0-9]{1,3}m)?\\s)";
+    private String WORK_PATTERN_STRING = "work{1}\\s{1}([0-9]{1,3}d)?([0-9]{1,3}h)?([0-9]{1,3}m)?";
     private String BRANCH_PATTERN_STRING = "[a-zA-Z]*-[0-9]{1,4}";
     private String BRANCH_PREFIX_PATTERN_STRING = "[a-zA-Z]*/";
 
