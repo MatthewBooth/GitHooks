@@ -1,3 +1,4 @@
+import java.lang.Integer;
 import java.lang.String;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,6 +19,9 @@ public class GitCommitMsg {
 
     private String BRANCH_PATTERN_STRING = "[a-zA-Z]*-[0-9]{1,4}";
     private String BRANCH_PREFIX_PATTERN_STRING = "[a-zA-Z]*/";
+
+    private Integer EXIT_NORMALLY = 0;
+    private Integer EXIT_INVALID_WORK_STRING = 1;
 
     public GitCommitMsg() {
     }
@@ -161,6 +165,8 @@ public class GitCommitMsg {
 
                 mTimeSpent = matcherValid.group();
             }
+        } else {
+            System.exit(EXIT_INVALID_WORK_STRING);
         }
     }
 
