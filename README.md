@@ -2,7 +2,15 @@
 
 ### Installation
 
-To install this run the following command from this directory:-
+Before installing, you should:
+ * check that the email address you have registered as set as your primary on GitHub is the same as YouTrack.
+ * set your global git config to use the same email by issuing the following command:-
+
+```bash
+git config --global user.email "[YOUR_EMAIL_HERE]"
+```
+
+After this you can install this by running the following command from this directory (where these files are contained):-
 
 ```bash
 sh install-custom-githooks.sh
