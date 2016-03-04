@@ -32,11 +32,15 @@ If there is an update to this repository you should navigate to where ever you c
 git pull
 ```
 
-Then to each of the directories that you use these hooks in, run this command
+Then run this command
 
 ```bash
-bash $(git config --path --get init.templatedir)/../update-hooks.sh
+sh update-directory.sh ~/Sites
 ```
+
+Replace "~/Sites" with the location of all your work projects
+
+That script will loop over all the folders in that directory, check for a .git folder, and run an update command
 
 Updates should be few and far between, but it's worth knowing how to do this!
 
