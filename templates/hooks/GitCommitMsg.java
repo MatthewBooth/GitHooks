@@ -2,16 +2,26 @@ import java.lang.Integer;
 import java.lang.String;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.*;
 
 public class GitCommitMsg {
 
+    private final String WORK_STRING = "work";
+    private final String YOUTRACK_STRING = "YouTrack: #";
+    private final String TIME_STRING = "time:";
+    private final String TYPE_STRING = "type:";
     private String mBranch;
     private String mMessage;
     private String mTimeSpent;
+    private String mType;
 
-    private String WORK_PATTERN_STRING = "work{1}\\s{1}([0-9]{1,3}d)?([0-9]{1,3}h)?([0-9]{1,3}m)?";
+    private String mOriginalMessage;
 
-    private String WORK_PATTERN_INVALID_STRING = "work{1}\\s{1}" +
+    private String mOriginalBranch;
+
+    private String WORK_PATTERN_STRING = "time{1}:{1}([0-9]{1,3}d)?([0-9]{1,3}h)?([0-9]{1,3}m)?";
+
+    private String WORK_PATTERN_INVALID_STRING = "time{1}:{1}" +
             "((([0-9]{1,3}h){1}([0-9]{1,3}d){1}){1}|" +
             "(([0-9]{1,3}m){1}([0-9]{1,3}d){1}){1}|" +
             "(([0-9]{1,3}m){1}([0-9]{1,3}h){1}){1}|" +
@@ -20,10 +30,32 @@ public class GitCommitMsg {
     private String BRANCH_PATTERN_STRING = "[a-zA-Z]*-[0-9]{1,4}";
     private String BRANCH_PREFIX_PATTERN_STRING = "[a-zA-Z]*/";
 
+    private String TYPE_PATTERN_STRING = "(type:)([dD]evelopment{1}|[tT]esting{1}|[dD]ocumentation{1}){1}";
+
     private Integer EXIT_NORMALLY = 0;
     private Integer EXIT_INVALID_WORK_STRING = 1;
 
-    public GitCommitMsg() {
+    private String NEW_LINE = "\n";
+    private String SPACE = " ";
+
+    public GitCommitMsg(String message, String branch) {
+        // Set the original message
+        setOriginalMessage(message);
+
+        // Set the original branch
+        setOriginalBranch(branch);
+
+        // Set the branch variable
+        setBranch(branch);
+
+        // Set the time spent variable
+        setTimeSpent(message);
+
+        // Set the message variable
+        setMessage(message);
+
+        // Set the type variable
+        setType(message);
     }
 
     /**
@@ -97,28 +129,22 @@ public class GitCommitMsg {
         // Initialised the mMessage variable
         mMessage = "";
 
-        // Check to see if we have successfully set the time spent variable
-        // If we have then we can split on it
-        String timeSpent = getTimeSpent();
-        if (!timeSpent.isEmpty()) {
+        // Split the string on the time spent keyword
+        // No need to use the whole regex for this, as we already know we can just use "time:"
+        String[] split = message.split(TIME_STRING);
 
-            // Split the string on the time spent keyword
-            // No need to use the whole regex for this, as we already know we can just use "work"
-            // Since the time split variable is set
-            String[] split = message.split("work");
-
-            // If the split is larger than 1, then we have something to use
-            if (split.length > 1) {
-
-                // Use the first part of the split, the characters before the keyword
-                // This should be the actual commit message before the time spent data
-                mMessage = split[0];
+        // If the split is larger than 1, then we have something to use
+        if (split.length > 1) {
+            // Split again on the type String, just in case it is set before the time string
+            if (split[0].contains(TYPE_STRING)) {
+                split = message.split(TYPE_STRING);
             }
-        } else {
 
-            // If we don't have the work keyword, then we haven't added the time spent data
-            // In which case, just give us the raw message as-is
-            mMessage = message;
+            // Use the first part of the split, the characters before the keyword
+            // This should be the actual commit message before the time spent data
+            mMessage = split[0];
+        } else {
+            mMessage = getOriginalMessage();
         }
     }
 
@@ -142,8 +168,8 @@ public class GitCommitMsg {
         mTimeSpent = "";
 
         // Pattern matching for the time spent
-        // We're looking for the word "work once
-        // Followed by a whitespace character once
+        // We're looking for the word "work" once
+        // Followed by a colon character once
         // Finished by any digit between 0-9, either 1 to 3 times
         Pattern patternValid = Pattern.compile(WORK_PATTERN_STRING);
 
@@ -163,11 +189,91 @@ public class GitCommitMsg {
             // If we find the pattern then set the first group to be the time spent
             if (matcherValid.find()) {
 
-                mTimeSpent = matcherValid.group();
+                // Stripe out the time: string
+                String matched = matcherValid.group().replace(TIME_STRING, "");
+
+                // Set the formatted string
+                mTimeSpent = matched;
             }
         } else {
             System.exit(EXIT_INVALID_WORK_STRING);
         }
+    }
+
+    /**
+     * Sets the type string
+     *
+     * @param String type  The string to set as the type
+     */
+    public void setType(String message) {
+        // Initialise the mBranch variable to an empty string
+        mType = "";
+
+        // Pattern matching for the type
+        Pattern patternValid = Pattern.compile(TYPE_PATTERN_STRING);
+
+        // Match the pattern against the message
+        Matcher matcherValid = patternValid.matcher(message);
+
+        // If we find the pattern then set the first group to be the time spent
+        if (matcherValid.find()) {
+            // Stripe out the type: string
+            String matched = matcherValid.group().replace(TYPE_STRING, "");
+
+            // Capitalise the first letter
+            String capitalise = matched.substring(0, 1).toUpperCase() + matched.substring(1);
+
+            // Set the formatted string
+            mType = capitalise;
+
+        } else {
+            mType = "Development";
+        }
+    }
+
+    /**
+     * Gets the type string
+     *
+     * @return String  The type string
+     */
+    public String getType() {
+        return mType;
+    }
+
+    /**
+     * Gets the original branch message as passed through via the bash script
+     *
+     * @return String the original branch string
+     */
+    public String getOriginalBranch() {
+        return mOriginalBranch;
+    }
+
+    /**
+     * Set the original branch string
+     *
+     * @param branch the original branch string
+     */
+    public void setOriginalBranch(String branch) {
+        mOriginalBranch = branch;
+    }
+
+    /**
+     * Get the original message string
+     *
+     * @return String  The original commit message
+     */
+    public String getOriginalMessage() {
+        return mOriginalMessage;
+    }
+
+    /**
+     * Set the original message string
+     *
+     * @param String message the message string
+     */
+    public void setOriginalMessage(String message) {
+        mOriginalMessage = message;
     }
 
     /**
@@ -190,10 +296,14 @@ public class GitCommitMsg {
         } else {
             // Build out commit message
             output.append(getMessage());
-            output.append("\n\n");
-            output.append("YouTrack: #");
+            output.append(NEW_LINE + NEW_LINE);
+            output.append(YOUTRACK_STRING);
             output.append(getBranch());
-            output.append(" ");
+            output.append(SPACE);
+            output.append(WORK_STRING);
+            output.append(SPACE);
+            output.append(getType());
+            output.append(SPACE);
             output.append(getTimeSpent());
 
             // Return it
@@ -209,23 +319,14 @@ public class GitCommitMsg {
      */
     public static void main(String[] args) {
 
-        // Create an instance of this class
-        GitCommitMsg gitCommitMsg = new GitCommitMsg();
-
         // First argument is the branch
         String branch = args[0];
 
         // First argument is the message
         String message = args[1];
 
-        // Set the branch variable
-        gitCommitMsg.setBranch(branch);
-
-        // Set the time spent variable
-        gitCommitMsg.setTimeSpent(message);
-
-        // Set the message variable
-        gitCommitMsg.setMessage(message);
+        // Create an instance of this class
+        GitCommitMsg gitCommitMsg = new GitCommitMsg(message, branch);
 
         // Build the output string
         String output = gitCommitMsg.getOutput();

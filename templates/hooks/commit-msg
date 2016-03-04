@@ -29,7 +29,7 @@ compileGitCommitMsg() {
 exitStatus() {
     if [ $1 -eq 1 ]; then
         echo "You have entered an invalid time string.\n\n"
-        echo "Please make sure that there is only one space between 'work' and the time.\n\n"
+        echo "Please make sure that there is only one colon between 'work' and the time.\n\n"
         echo "Please also make sure the time is formatted properly and goes Days Hours Minutes.\n\n"
         echo "You do not have to add days or hours if you haven't spent that long on them, but you cannot add days after hours or hours after minutes.\n\n"
         exit 1

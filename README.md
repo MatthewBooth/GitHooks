@@ -49,14 +49,23 @@ This script will extract that and add it to the end of your commit message.
 
 You can and should also add the time spend to the commit message in the following format:
 
-* work 1d
-* work 3h
-* work 6h
+* time:1d
+* time:3h
+* time:6h
+* type:Testing time:1d
+* type:documentation time:2h
+* type:Development time:4h
+
+You do not need to use the type parameter. It will default to "Development" if left unused. You can capitalise the word or not, the script will capitalise for you.
 
 Add this at the end of the commit message. It should look like this
 
 ```bash
-git commit -m "This is the work we did work 1d"
+git commit -m "This is the work we did time:1d"
+
+OR
+
+git commit -m "This is the work we did time:1d type:documentation"
 ```
 
 This will then create a git commit looking like this
@@ -64,7 +73,7 @@ This will then create a git commit looking like this
 ```
 This the work we have done
 
-YouTrack: #connection-51 work 1d
+YouTrack: #connection-51 work Development 1d
 ```
 
 and update YouTrack accordingly!
