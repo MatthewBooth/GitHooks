@@ -8,7 +8,7 @@ main()
           cd "$files"
           if [[ -e ".git" && -d ".git" ]] ; then
             echo "Updating $files"
-            bash $(git config --path --get init.templatedir)/../update-hook.sh >> /dev/null
+            bash $(git config --path --get init.templatedir)/../bin/update-hook.sh >> /dev/null
           fi
        fi
     done
